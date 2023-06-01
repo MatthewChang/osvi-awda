@@ -81,33 +81,6 @@ def experiment_log(log_folder):
 
 from functools import wraps
 import inspect
-def initializer(func):
-    """
-    Automatically assigns the parameters.
-
-    import util.initializer
-    >>> class process:
-    ...     @util.initializer
-    ...     def __init__(self, cmd, reachable=False, user='root'):
-    ...         pass
-    >>> p = process('halt', True)
-    >>> p.cmd, p.reachable, p.user
-    ('halt', True, 'root')
-    """
-    names, varargs, keywords, defaults = inspect.getargspec(func)
-    if defaults is None: defaults = []
-
-    @wraps(func)
-    def wrapper(self, *args, **kargs):
-        for name, arg in list(zip(names[1:], args)) + list(kargs.items()):
-            setattr(self, name, arg)
-
-        for name, default in zip(reversed(names), reversed(defaults)):
-            if not hasattr(self, name):
-                setattr(self, name, default)
-        func(self, *args, **kargs)
-    return wrapper
-
 import torch.nn as nn
 import torch
 class GaussianNetwork(nn.Module):

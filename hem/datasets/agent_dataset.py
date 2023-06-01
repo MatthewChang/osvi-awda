@@ -49,11 +49,12 @@ INVERSE_MATS['.'] = INVERSE_MATS['dev']
 class AgentDemonstrations(Dataset):
     def __init__(self, root_dir=None, files=None, height=224, width=224, depth=False, normalize=True, crop=None, randomize_vid_frames=False, T_context=15, extra_samp_bound=0,
                  T_pair=0, freq=1, append_s0=False, mode='train', split=[0.9, 0.1], state_spec=None, action_spec=None, sample_sides=False, min_frame=0, cache=False, random_targets=False,
-                 color_jitter=None, rand_crop=None, rand_rotate=None, is_rad=False, rand_translate=None, rand_gray=None, rep_buffer=0, target_vid=False, reduce_bits=False, aux_pose=False,waypoints=False,no_context_jitter=False,grasp=True,rand_flip=False,interpolate_gaps=False,high_ent=False,head_label=0,raw_images=False,start_samp_rate=0):
+                 color_jitter=None, rand_crop=None, rand_rotate=None, is_rad=False, rand_translate=None, rand_gray=None, rep_buffer=0, target_vid=False, reduce_bits=False, aux_pose=False,waypoints=False,no_context_jitter=False,grasp=True,rand_flip=False,interpolate_gaps=False,high_ent=False,head_label=0,raw_images=False,start_samp_rate=0,hand_cam=False):
         assert mode in ['train', 'val'], "mode should be train or val!"
         assert T_context >= 2 or T_pair > 0, "Must return (s,a) pairs or context!"
 
         self.raw_images = raw_images
+        self.hand_cam = hand_cam
         self._rand_flip = rand_flip
         self.waypoints = waypoints
         self.no_context_jitter = no_context_jitter
@@ -217,7 +218,7 @@ class AgentDemonstrations(Dataset):
             if self.raw_images:
                 ret_dict['raw_images'].append(image[None])
             ret_dict['images'].append(self._crop_and_resize(image)[None])
-            if 'hand_cam' in t['obs']:
+            if self.hand_cam and 'hand_cam' in t['obs']:
                 if 'hand_cam' not in ret_dict: ret_dict['hand_cam'] = []
                 him = repeat(t['obs']['hand_cam'],'h w -> h w 3')
                 ret_dict['hand_cam'].append(self._crop_and_resize(him)[None])

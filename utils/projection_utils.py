@@ -74,3 +74,12 @@ def compute_crop_adjustment(crop_values,size_before):
     crop_mat = from_01 @ np.linalg.inv(crop_adjustment) @ to_01
     return crop_mat
 
+
+def do_projection(pos,MVP_matrix,cam_pos,frame_width=224,frame_height=224):
+    world_coord = np.ones((4, 1))
+    world_coord[:3, 0] = pos - cam_pos
+    image_coord = MVP_matrix.dot(world_coord)
+    point = image_coord[:2].ravel()/image_coord[2]
+    point = np.array([frame_height,frame_width])-point
+    return np.flip(point).astype(int)
+
